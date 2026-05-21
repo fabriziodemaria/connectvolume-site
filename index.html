@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConnectVolume — One menu bar volume slider for Spotify Connect and Sonos</title>
+  <meta name="description" content="ConnectVolume is a macOS menu bar app that controls the volume of Spotify Connect devices and Sonos speakers from one tiny popover." />
+  <meta property="og:title" content="ConnectVolume — One menu bar volume slider for Spotify Connect and Sonos" />
+  <meta property="og:description" content="One menu bar slider. All your remote speakers." />
+  <meta property="og:image" content="icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0c11;
+      --surface: #141826;
+      --border: rgba(255,255,255,0.07);
+      --accent: #0063ff;
+      --accent-soft: #5f93ff;
+      --accent-glow: rgba(0,99,255,0.28);
+      --text: #e8eaf0;
+      --muted: #7a8099;
+      --pill-bg: rgba(0,99,255,0.14);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── hero ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 96px 24px 72px;
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .icon-wrap {
+      width: 108px;
+      height: 108px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px var(--border), 0 24px 64px rgba(0,0,0,0.6), 0 0 48px var(--accent-glow);
+      margin-bottom: 32px;
+    }
+    .icon-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-name {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.55;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.4rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent-soft));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 40px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px 26px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 24px var(--accent-glow);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-glow);
+      background: #2a7bff;
+    }
+
+    .version-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .version-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── features ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 0 24px 80px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(0,99,255,0.3);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .card-icon {
+      display: block;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 16px;
+      color: var(--accent);
+      opacity: 0.9;
+    }
+
+    .card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── requirements ── */
+    .requirements {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      max-width: 900px;
+      width: calc(100% - 48px);
+      margin-bottom: 80px;
+    }
+    .requirements h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .req-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .req-list li {
+      background: var(--pill-bg);
+      border: 1px solid rgba(0,99,255,0.22);
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 99px;
+    }
+
+    /* ── footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      width: 100%;
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+    .dl-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --border: rgba(0,0,0,0.08);
+        --text: #111827;
+        --muted: #6b7280;
+        --pill-bg: rgba(0,99,255,0.1);
+      }
+      h1 {
+        background: linear-gradient(135deg, #111827 40%, #0063ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="icon-wrap">
+      <img src="icon.png" alt="ConnectVolume icon" />
+    </div>
+
+    <h2 class="product-name">ConnectVolume</h2>
+
+    <h1>One slider for<br>every speaker</h1>
+
+    <p class="subtitle">
+      ConnectVolume is a macOS menu bar app that controls the volume of your
+      Spotify Connect devices and Sonos speakers from one tiny popover —
+      plus optional F11 / F12 hardware-key intercept that only kicks in when
+      something external is actually playing.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn-primary" href="https://github.com/fabriziodemaria/connectvolume-site/releases/download/v0.0.0/ConnectVolume-0.0.0.dmg">
+        <svg class="dl-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1v9M5 7l3 3 3-3M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Download for Mac
+      </a>
+    </div>
+
+    <p class="version-note">
+      Version 0.0.0 · macOS 14 Sonoma or later · Notarized Developer ID
+    </p>
+  </section>
+
+  <section class="features">
+    <div class="card">
+      <!-- spotify-like ring -->
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M7 9.5c3-1.5 7-1.5 10 .5"/>
+        <path d="M7.5 13c2.5-1 5.5-1 8 .8"/>
+        <path d="M8 16c2-.7 4.2-.7 6 .5"/>
+      </svg>
+      <h3>Spotify Connect</h3>
+      <p>Control the volume of any device showing up in your Spotify Connect picker, signed in once via PKCE OAuth. Live status next to every device.</p>
+    </div>
+
+    <div class="card">
+      <!-- speaker / sonos -->
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="2.5" width="12" height="19" rx="2"/>
+        <circle cx="12" cy="9" r="2"/>
+        <circle cx="12" cy="16" r="3"/>
+      </svg>
+      <h3>Sonos, even when Spotify can&rsquo;t</h3>
+      <p>Spotify&rsquo;s Web API can&rsquo;t set volume on most Sonos speakers, so ConnectVolume talks to them directly over SOAP/UPnP on your LAN.</p>
+    </div>
+
+    <div class="card">
+      <!-- keyboard / hardware keys -->
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2.5" y="6" width="19" height="12" rx="2"/>
+        <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/>
+      </svg>
+      <h3>F11 / F12 that does the right thing</h3>
+      <p>Hardware volume keys control your remote speakers when something external is playing; fall back to the system volume when nothing is.</p>
+    </div>
+
+    <div class="card">
+      <!-- speaker waves / HUD -->
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10v4h4l5 4V6L7 10H3z"/>
+        <path d="M16 9c1.2 1 1.2 5 0 6"/>
+        <path d="M19 6c2.5 2 2.5 10 0 12"/>
+      </svg>
+      <h3>Global hotkeys &amp; on-screen HUD</h3>
+      <p>Configurable system-wide shortcuts with hold-to-repeat, plus a transparent HUD overlay so you always know where the volume landed.</p>
+    </div>
+  </section>
+
+  <div class="requirements">
+    <h2>Requirements</h2>
+    <ul class="req-list">
+      <li>macOS 14 Sonoma+</li>
+      <li>Spotify Premium (for Spotify Connect)</li>
+      <li>Sonos on local network (optional)</li>
+      <li>Accessibility permission (for hardware key intercept)</li>
+    </ul>
+  </div>
+
+  <footer>
+    Built by <a href="https://github.com/fabriziodemaria">Fabrizio Demaria</a> · <a href="https://github.com/fabriziodemaria/connectvolume-site">Source</a>
+  </footer>
+
+</body>
+</html>
