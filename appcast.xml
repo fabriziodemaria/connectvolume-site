@@ -5,6 +5,18 @@
     <description>ConnectVolume update feed</description>
     <language>en</language>
     <item>
+  <title>ConnectVolume 0.0.10</title>
+  <pubDate>Sun, 05 Jul 2026 06:30:43 +0000</pubDate>
+  <sparkle:version>202607050829</sparkle:version>
+  <sparkle:shortVersionString>0.0.10</sparkle:shortVersionString>
+  <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+  <enclosure
+    url="https://github.com/fabriziodemaria/connectvolume-site/releases/download/v0.0.10/ConnectVolume-0.0.10.dmg"
+    sparkle:edSignature="H8eehlC6x7Pl8QYwt9tFPQREr3Dt1tHV7a3CN38PB9scT8OCsuXMQoyl2W3xf7j5tzH6zOdL/d1sdtgIR9O1BA=="
+    length="19783530"
+    type="application/octet-stream"/>
+</item>
+    <item>
   <title>ConnectVolume 0.0.9</title>
   <pubDate>Sun, 05 Jul 2026 06:25:11 +0000</pubDate>
   <sparkle:version>202607050823</sparkle:version>
